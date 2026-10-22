@@ -29,3 +29,33 @@ CREATE OR REPLACE FILE FORMAT RAW.FF_JSON
 CREATE OR REPLACE STAGE RAW.SKYPOINTS_STAGE
     FILE_FORMAT = (FORMAT_NAME = 'RAW.FF_PIPE_DELIMITED')
     COMMENT     = 'Internal stage for landing member flat files and partner JSON feeds';
+
+
+CREATE OR REPLACE TABLE RAW.RAW_MEMBERS (
+    REC_TYPE            VARCHAR(10),
+    MEMBER_NAME         VARCHAR(500),
+    MEMBER_ID           VARCHAR(50),
+    ENROLLMENT_DATE     VARCHAR(50),
+    LAST_FLIGHT_DATE    VARCHAR(50),
+    TIER_CODE           VARCHAR(20),
+    AGENT_NAME          VARCHAR(500),
+    STATE               VARCHAR(100),
+    COUNTRY             VARCHAR(100),
+    DOB                 VARCHAR(50),
+    IS_ACTIVE           VARCHAR(10),
+    POST_CODE           VARCHAR(20),
+    SOURCE_FILE         VARCHAR(500),
+    LOAD_TS             TIMESTAMP_NTZ   DEFAULT CURRENT_TIMESTAMP(),
+    BATCH_ID            VARCHAR(50)
+)
+CLUSTER BY (BATCH_ID)
+COMMENT = 'Bronze: schema-on-read landing table for pipe-delimited member profile feeds.';
+
+CREATE OR REPLACE TABLE RAW.RAW_REDEMPTIONS (
+    JSON_PAYLOAD        VARIANT,
+    SOURCE_FILE         VARCHAR(500),
+    LOAD_TS             TIMESTAMP_NTZ   DEFAULT CURRENT_TIMESTAMP(),
+    BATCH_ID            VARCHAR(50)
+)
+CLUSTER BY (BATCH_ID)
+COMMENT = 'Bronze: native VARIANT document store preserving semi-structured partner JSON feeds.';
